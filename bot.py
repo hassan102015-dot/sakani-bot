@@ -10,7 +10,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("هلا والله! بوت سكني شغال ✅")
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("البوت شغال تمام")
+    await update.message.reply_text("تمام")
 
 def main():
     if not BOT_TOKEN:
