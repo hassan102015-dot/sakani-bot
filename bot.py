@@ -1,39 +1,24 @@
 import os
-import threading
-from flask import Flask
+import logging
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = os.getenv("BOT_TOKEN")
-
-# سيرفر وهمي عشان Render ما يطفي البوت
-app_flask = Flask(__name__)
-
-@app_flask.route('/')
-def home():
-    return "Bot is running!"
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+logging.basicConfig(level=logging.INFO)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "هلا والله! بوت سكني شغال ✅\n"
-        "ارسل رقم هويتك للبحث"
-    )
+    await update.message.reply_text("هلا والله! بوت سكني شغال ✅")
 
-async def handle_msg(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
-    await update.message.reply_text(f"استلمت: {text}\n(جاري ربطه مع موقع سكني قريبا)")
-
-def run_flask():
-    port = int(os.environ.get("PORT", 10000))
-    app_flask.run(host="0.0.0.0", port=port)
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("البوت شغال تمام")
 
 def main():
-    app = Application.builder().token(TOKEN).build()
+    if not BOT_TOKEN:
+        raise ValueError("BOT_TOKEN not set!")
+    app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_msg))
-    print("Bot started...")
+    app.add_handler(CommandHandler("help", help_cmd))
     app.run_polling()
 
 if __name__ == "__main__":
-    threading.Thread(target=run_flask, daemon=True).start()
     main()
